@@ -196,10 +196,10 @@ INPUTS
 ==================================================
 
 RAW IDEA:
-\${rawIdea}
+${rawIdea}
 
 OPTIONAL REFERENCE STYLE BLUEPRINT:
-\${competitorBlueprint || "No reference style blueprint provided."}
+${competitorBlueprint || "No reference style blueprint provided."}
 
 Use the Reference Style Blueprint only for:
 - pacing rhythm;
@@ -513,6 +513,9 @@ Use the 00 HANDOFF as locked source.
 ==================================================
 INPUT
 ==================================================
+
+RAW IDEA:
+${rawIdea}
 
 Use the approved 00 HANDOFF:
 ---
