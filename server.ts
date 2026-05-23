@@ -58,8 +58,11 @@ async function generateText(prompt: string, systemInstruction?: string, model: s
       console.log(`[Vertex AI] Trying model: ${currentModel}`);
       const config: any = {};
       
+      const russianInstruction = "ОБЯЗАТЕЛЬНОЕ УСЛОВИЕ: Все ответы, отчеты, сценарии и любые другие тексты должны быть написаны исключительно на русском языке.";
       if (systemInstruction) {
-        config.systemInstruction = systemInstruction;
+        config.systemInstruction = `${systemInstruction}\n\n${russianInstruction}`;
+      } else {
+        config.systemInstruction = russianInstruction;
       }
       
       if (thinkingLevel && currentModel.includes("gemini-3") && currentModel.includes("pro")) {
@@ -2518,7 +2521,7 @@ We are writing Part Number: ${partNumber}. If avatar commentary is enabled, the 
 If this part number matches one of those, you must write exactly one [AVATAR] block here following the exact instructions below. Otherwise, write zero [AVATAR] lines.
 
 Use output language:
-${outputLanguage || "English"}
+${outputLanguage || "Russian"}
 
 Use the approved:
 - story DNA;
@@ -3298,10 +3301,10 @@ OUTPUT RULES
 You MUST output exactly two sections separated by markers.
 
 ### SCRIPT_OUTPUT_START
-In ${outputLanguage || "English"}, begin writing ${partTitle} with the exact heading "${partTitle.toUpperCase()}" on the very first line. Do not preface it with introductory remarks or commentary. Output only the final script narration. No analysis, tables, or notes.
+In ${outputLanguage || "Russian"}, begin writing ${partTitle} with the exact heading "${partTitle.toUpperCase()}" on the very first line. Do not preface it with introductory remarks or commentary. Output only the final script narration. No analysis, tables, or notes.
 
 ### MEMORY_START
-Write a concise but critical bulleted list (in English) summarizing this part. List exact hooks used, specific emotional beats consumed, metaphors applied, and precise plot points covered. This serves as your continuous memory to strictly PREVENT repeating the exact same stylistic tricks, face slaps, or reaction notes in subsequent parts.
+Write a concise but critical bulleted list (in Russian) summarizing this part. List exact hooks used, specific emotional beats consumed, metaphors applied, and precise plot points covered. This serves as your continuous memory to strictly PREVENT repeating the exact same stylistic tricks, face slaps, or reaction notes in subsequent parts.
 `;
 
   try {
