@@ -104,6 +104,396 @@ async function generateText(prompt: string, systemInstruction?: string, model: s
   throw new Error(lastError?.message || "All models in the fallback chain failed.");
 }
 
+const globalAnalysisQualityPatch = `
+==================================================
+GLOBAL ANALYSIS QUALITY PATCH
+==================================================
+
+This rule applies to all stages:
+
+00 IDEA SETUP
+01 FOUNDATION DNA
+02 MACRO OUTLINE
+03 SCENE CARDS
+04 FINAL SCRIPT
+05 LINTER QA
+
+Purpose:
+Prevent logic drift, role confusion, genre contamination, unrealistic power escalation, and weak analytical decisions in future scripts.
+
+This patch applies to every project, every genre, and every new idea.
+
+==================================================
+1. LOCKED FACTS MUST STAY LOCKED
+==================================================
+
+Once a role, character function, hidden card, proof object, antagonist plan, or final collapse logic is approved in a previous stage, later stages must not casually change it.
+
+Do not change:
+- protagonist function;
+- antagonist function;
+- betrayer function;
+- true ally function;
+- hidden advantage;
+- proof system;
+- final collapse logic;
+- opening fingerprint;
+- avatar placement;
+- major scene surfaces.
+
+If a change is necessary, mark it clearly:
+
+PROPOSED CHANGE:
+Reason:
+Risk:
+Requires user approval: yes.
+
+Do not silently change approved story logic.
+
+==================================================
+2. CHARACTER ROLE DRIFT CHECK
+==================================================
+
+Before generating each stage, check whether any character is being assigned too many unrelated functions.
+
+A character should not become:
+- betrayer;
+- doctor;
+- supply officer;
+- comic relief;
+- proof keeper;
+- villain assistant;
+- emotional mirror;
+
+all at the same time unless the previous stage explicitly locked that.
+
+If one character begins carrying too many functions, split roles cleanly.
+
+Example:
+Main betrayer handles documents, supply, signatures, and corruption.
+Minor doctor handles medical incompetence or pressure.
+Antagonist controls the larger scheme.
+
+Do not merge roles just to simplify the cast if it damages logic.
+
+==================================================
+3. DOMAIN CONSISTENCY CHECK
+==================================================
+
+Each story has a specific domain.
+
+Examples:
+- military toxicology story;
+- system billionaire story;
+- legal revenge story;
+- game development revenge story;
+- cultivation family drama;
+- medical mystery;
+- business inheritance story.
+
+Do not import language, surfaces, or mechanics from another domain unless the premise demands it.
+
+For example:
+
+In a military toxicology story, do not suddenly use:
+- cyber operation;
+- game backdoor;
+- billionaire gala;
+- red carpet;
+- system admin panel;
+
+unless those were already part of the approved premise.
+
+In a game development story, do not suddenly use:
+- military tribunal;
+- poison supply chain;
+- battlefield commander;
+
+unless approved.
+
+Every term, scene, and proof object must match the story’s domain.
+
+==================================================
+4. TERMINOLOGY SANITY CHECK
+==================================================
+
+Before approving an output, scan for strange or misplaced terms.
+
+Flag:
+- wrong niche vocabulary;
+- mistranslated phrases;
+- accidental poetic nonsense;
+- words that sound impressive but do not fit the story;
+- terms from previous projects;
+- inconsistent job titles;
+- inconsistent institutions.
+
+If a phrase looks wrong, replace it with clear practical wording.
+
+Bad:
+икебана заговора
+
+Better:
+цепочка заговора
+схема саботажа
+структура заговора
+
+Bad:
+кибер-операции героя
+
+Better, if the story is not cyber:
+доступ к архивам
+работа с документами
+сбор доказательств
+анализ данных снабжения
+
+==================================================
+5. REALISM AND STATUS SCALE CHECK
+==================================================
+
+Do not make the protagonist unrealistically powerful unless the genre requires it.
+
+Check:
+- age;
+- profession;
+- rank;
+- legal authority;
+- institutional access;
+- social status;
+- realistic credentials;
+- physical limits;
+- emotional limits.
+
+If the protagonist is young, do not casually make them:
+- chief expert of the capital;
+- national-level authority;
+- owner of everything;
+- secret martial god;
+- universally obeyed by soldiers or officials;
+
+unless the premise already established it.
+
+Prefer realistic authority chains:
+- report from a certified center;
+- signature of a mentor;
+- lab stamp;
+- verified sample chain;
+- public test;
+- official witness;
+- documented proof.
+
+The protagonist can be brilliant, but brilliance must still pass through believable systems.
+
+==================================================
+6. PAYOFF REALISM CHECK
+==================================================
+
+Face-slaps must be satisfying but believable.
+
+Avoid exaggerated public worship unless the genre specifically supports it.
+
+Bad:
+Everyone salutes the civilian hero.
+
+Better:
+The crowd falls silent.
+The people who mocked him step aside.
+The doctor who doubted him calls him Doctor.
+The commander gives him formal recognition.
+The antagonist loses authority in front of witnesses.
+
+A good payoff changes status without turning the scene into cartoon worship.
+
+==================================================
+7. EVIDENCE CHAIN CHECK
+==================================================
+
+Proof must be specific, visible, and logically connected.
+
+Every major accusation must have:
+- source;
+- method of collection;
+- reason it is trusted;
+- who recognizes it;
+- how it becomes public;
+- why the enemy cannot deny it.
+
+Do not rely on:
+- “he revealed the truth”;
+- “everyone understood”;
+- “the evidence was undeniable”;
+
+without showing what the evidence is.
+
+Good proof examples:
+- signed delivery log;
+- timestamp;
+- lab report;
+- access record;
+- bank transfer;
+- camera footage;
+- chain of custody;
+- witness statement;
+- public system message;
+- medical test result.
+
+==================================================
+8. ANTAGONIST INTELLIGENCE CHECK
+==================================================
+
+The antagonist must not lose because they suddenly become stupid.
+
+They should lose because:
+- they underestimate the protagonist’s specific skill;
+- they overtrust their own status;
+- they use intermediaries who leave traces;
+- they escalate to protect their image;
+- they create public proof while trying to win;
+- their own false belief blinds them.
+
+If the antagonist is supposed to be smart, do not make them leave obvious direct evidence unless there is a strong reason.
+
+Use layered evidence:
+- indirect records;
+- subordinate mistakes;
+- financial traces;
+- contradictory reports;
+- third-party verification;
+- hidden witness;
+- chain of custody.
+
+==================================================
+9. BETRAYER FUNCTION CHECK
+==================================================
+
+The betrayer must have a clear function.
+
+They can be:
+- romantic betrayer;
+- family betrayer;
+- professional betrayer;
+- institutional betrayer;
+- friend betrayer;
+- subordinate betrayer.
+
+Do not make betrayal vague.
+
+For every betrayer, define:
+- what they want;
+- what they choose;
+- why the choice feels logical to them;
+- why it is morally ugly;
+- what proof exposes them;
+- what consequence they face.
+
+Regret must be gradual.
+
+No instant regret.
+No cheap forgiveness.
+No consequence-free apology.
+
+==================================================
+10. SCENE COUNT FEASIBILITY CHECK
+==================================================
+
+Before moving from macro outline to scene cards, check whether the scene count can support the target length.
+
+For a final script of one hundred twenty thousand to one hundred thirty thousand characters, the recommended scene count is usually:
+
+thirty six to fifty scenes.
+
+Lower scene counts are allowed only if the scenes are intentionally long and structurally rich.
+
+If the plan has fewer than thirty six scenes, add a warning:
+
+SCENE COUNT WARNING:
+This may create overly long scenes and slow pacing.
+
+If needed, increase scenes by splitting:
+- investigation beats;
+- public payoff beats;
+- antagonist counterattacks;
+- regret movement;
+- proof collection;
+- hidden card reveal;
+- final collapse sequence.
+
+Do not add filler scenes.
+
+==================================================
+11. STAGE OUTPUT SELF-CHECK
+==================================================
+
+At the end of every stage, silently check:
+
+- Did I preserve locked facts?
+- Did any character role drift?
+- Did I import terms from the wrong genre?
+- Did I make the protagonist too powerful?
+- Did I make the antagonist too stupid?
+- Did I make the betrayer regret too early?
+- Is the proof visual and concrete?
+- Are payoffs believable?
+- Is the scene count realistic?
+- Are surfaces specific to this premise?
+- Did I accidentally create generic scenes?
+- Did I introduce new hidden cards without approval?
+
+If any answer is problematic, correct it before output.
+
+==================================================
+12. LINTER MUST CATCH THESE ERRORS
+==================================================
+
+Stage 05 LINTER QA must explicitly check for:
+
+- role drift;
+- domain drift;
+- strange terminology;
+- unrealistic protagonist authority;
+- unrealistic public worship;
+- weak evidence chain;
+- antagonist stupidity;
+- scene count weakness;
+- hidden card inconsistency;
+- surface repetition;
+- copied structure from previous projects.
+
+If detected, Stage 05 must provide targeted repairs.
+
+Do not ignore these problems because the text sounds dramatic.
+
+Logic is more important than style.
+Never fix style by breaking story logic.
+Never expand length by adding random events.
+Never increase drama by making characters stupid.
+`;
+
+const preStageLogicContinuityCheck = `
+==================================================
+PRE-STAGE LOGIC CONTINUITY CHECK
+==================================================
+
+Before generating this stage, compare the current plan with the previous approved handoff.
+
+Check:
+
+1. Are all character roles unchanged?
+2. Are all hidden cards unchanged?
+3. Is the proof system still the same?
+4. Is the antagonist plan still logical?
+5. Is the betrayer still serving the same function?
+6. Is the true ally still functional, not just romantic?
+7. Has the story imported terms from another genre?
+8. Has the protagonist become unrealistically powerful?
+9. Has the final payoff become too exaggerated?
+10. Does the scene count support the target length?
+
+If there is a problem, fix it before writing the stage.
+
+Do not proceed with a logically corrupted plan.
+`;
+
 // 0. Reference Analysis Mode extraction
 app.post("/api/analyze-reference", async (req, res) => {
   const { competitorScripts } = req.body;
@@ -2247,6 +2637,11 @@ Stage 04 must be able to write the script from these scene cards without inventi
     modelToUse = "gemini-3.5-flash";
   }
 
+  prompt += `\n\n${globalAnalysisQualityPatch}`;
+  if (stageId === 2 || stageId === 3) {
+    prompt += `\n\n${preStageLogicContinuityCheck}`;
+  }
+
   try {
     const responseText = await generateText(prompt, systemInstruction, modelToUse, thinkingLevelToUse);
     
@@ -3310,8 +3705,10 @@ In ${outputLanguage || "Russian"}, begin writing ${partTitle} with the exact hea
 Write a concise but critical bulleted list (in Russian) summarizing this part. List exact hooks used, specific emotional beats consumed, metaphors applied, and precise plot points covered. This serves as your continuous memory to strictly PREVENT repeating the exact same stylistic tricks, face slaps, or reaction notes in subsequent parts.
 `;
 
+  let finalPrompt = prompt + `\n\n${globalAnalysisQualityPatch}`;
+
   try {
-    const rawResponse = await generateText(prompt, systemInstruction, "gemini-3.1-pro-preview", "HIGH");
+    const rawResponse = await generateText(finalPrompt, systemInstruction, "gemini-3.1-pro-preview", "HIGH");
     
     let partOutput = rawResponse;
     let memory = "";
@@ -4722,8 +5119,10 @@ Your job is quality control.
 You are the final gate before publication.
 `;
 
+  const finalPrompt = prompt + `\n\n${globalAnalysisQualityPatch}`;
+
   try {
-    const report = await generateText(prompt, systemInstruction, "gemini-2.5-pro");
+    const report = await generateText(finalPrompt, systemInstruction, "gemini-2.5-pro");
     res.json({ report });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
