@@ -104,13 +104,12 @@ async function generateText(prompt: string, systemInstruction?: string, model: s
   throw new Error(lastError?.message || "All models in the fallback chain failed.");
 }
 
-const globalAnalysisQualityPatch = `
+const globalPipelineDriftPreventionPatch = `
 ==================================================
-GLOBAL ANALYSIS QUALITY PATCH
+GLOBAL PIPELINE DRIFT PREVENTION PATCH
 ==================================================
 
 This rule applies to all stages:
-
 00 IDEA SETUP
 01 FOUNDATION DNA
 02 MACRO OUTLINE
@@ -118,380 +117,147 @@ This rule applies to all stages:
 04 FINAL SCRIPT
 05 LINTER QA
 
-Purpose:
-Prevent logic drift, role confusion, genre contamination, unrealistic power escalation, and weak analytical decisions in future scripts.
+Purpose: Prevent logic drift, role confusion, genre contamination, unrealistic power escalation, and weak analytical decisions in future scripts.
+This patch applies to EVERY project, EVERY genre, and EVERY new idea.
 
-This patch applies to every project, every genre, and every new idea.
-
-==================================================
 1. LOCKED FACTS MUST STAY LOCKED
-==================================================
-
-Once a role, character function, hidden card, proof object, antagonist plan, or final collapse logic is approved in a previous stage, later stages must not casually change it.
-
-Do not change:
-- protagonist function;
-- antagonist function;
-- betrayer function;
-- true ally function;
-- hidden advantage;
-- proof system;
-- final collapse logic;
-- opening fingerprint;
-- avatar placement;
-- major scene surfaces.
-
-If a change is necessary, mark it clearly:
-
-PROPOSED CHANGE:
-Reason:
-Risk:
-Requires user approval: yes.
-
-Do not silently change approved story logic.
-
-==================================================
-2. CHARACTER ROLE DRIFT CHECK
-==================================================
-
-Before generating each stage, check whether any character is being assigned too many unrelated functions.
-
-A character should not become:
-- betrayer;
-- doctor;
-- supply officer;
-- comic relief;
-- proof keeper;
-- villain assistant;
-- emotional mirror;
-
-all at the same time unless the previous stage explicitly locked that.
-
-If one character begins carrying too many functions, split roles cleanly.
-
-Example:
-Main betrayer handles documents, supply, signatures, and corruption.
-Minor doctor handles medical incompetence or pressure.
-Antagonist controls the larger scheme.
-
-Do not merge roles just to simplify the cast if it damages logic.
-
-==================================================
-3. DOMAIN CONSISTENCY CHECK
-==================================================
-
-Each story has a specific domain.
-
-Examples:
-- military toxicology story;
-- system billionaire story;
-- legal revenge story;
-- game development revenge story;
-- cultivation family drama;
-- medical mystery;
-- business inheritance story.
-
-Do not import language, surfaces, or mechanics from another domain unless the premise demands it.
-
-For example:
-
-In a military toxicology story, do not suddenly use:
-- cyber operation;
-- game backdoor;
-- billionaire gala;
-- red carpet;
-- system admin panel;
-
-unless those were already part of the approved premise.
-
-In a game development story, do not suddenly use:
-- military tribunal;
-- poison supply chain;
-- battlefield commander;
-
-unless approved.
-
-Every term, scene, and proof object must match the story’s domain.
-
-==================================================
-4. TERMINOLOGY SANITY CHECK
-==================================================
-
-Before approving an output, scan for strange or misplaced terms.
-
-Flag:
-- wrong niche vocabulary;
-- mistranslated phrases;
-- accidental poetic nonsense;
-- words that sound impressive but do not fit the story;
-- terms from previous projects;
-- inconsistent job titles;
-- inconsistent institutions.
-
-If a phrase looks wrong, replace it with clear practical wording.
-
-Bad:
-икебана заговора
-
-Better:
-цепочка заговора
-схема саботажа
-структура заговора
-
-Bad:
-кибер-операции героя
-
-Better, if the story is not cyber:
-доступ к архивам
-работа с документами
-сбор доказательств
-анализ данных снабжения
-
-==================================================
-5. REALISM AND STATUS SCALE CHECK
-==================================================
-
-Do not make the protagonist unrealistically powerful unless the genre requires it.
-
-Check:
-- age;
-- profession;
-- rank;
-- legal authority;
-- institutional access;
-- social status;
-- realistic credentials;
-- physical limits;
-- emotional limits.
-
-If the protagonist is young, do not casually make them:
-- chief expert of the capital;
-- national-level authority;
-- owner of everything;
-- secret martial god;
-- universally obeyed by soldiers or officials;
-
-unless the premise already established it.
-
-Prefer realistic authority chains:
-- report from a certified center;
-- signature of a mentor;
-- lab stamp;
-- verified sample chain;
-- public test;
-- official witness;
-- documented proof.
-
-The protagonist can be brilliant, but brilliance must still pass through believable systems.
-
-==================================================
-6. PAYOFF REALISM CHECK
-==================================================
-
-Face-slaps must be satisfying but believable.
-
-Avoid exaggerated public worship unless the genre specifically supports it.
-
-Bad:
-Everyone salutes the civilian hero.
-
-Better:
-The crowd falls silent.
-The people who mocked him step aside.
-The doctor who doubted him calls him Doctor.
-The commander gives him formal recognition.
-The antagonist loses authority in front of witnesses.
-
-A good payoff changes status without turning the scene into cartoon worship.
-
-==================================================
-7. EVIDENCE CHAIN CHECK
-==================================================
-
-Proof must be specific, visible, and logically connected.
-
-Every major accusation must have:
-- source;
-- method of collection;
-- reason it is trusted;
-- who recognizes it;
-- how it becomes public;
-- why the enemy cannot deny it.
-
-Do not rely on:
-- “he revealed the truth”;
-- “everyone understood”;
-- “the evidence was undeniable”;
-
-without showing what the evidence is.
-
-Good proof examples:
-- signed delivery log;
-- timestamp;
-- lab report;
-- access record;
-- bank transfer;
-- camera footage;
-- chain of custody;
-- witness statement;
-- public system message;
-- medical test result.
-
-==================================================
-8. ANTAGONIST INTELLIGENCE CHECK
-==================================================
-
-The antagonist must not lose because they suddenly become stupid.
-
-They should lose because:
-- they underestimate the protagonist’s specific skill;
-- they overtrust their own status;
-- they use intermediaries who leave traces;
-- they escalate to protect their image;
-- they create public proof while trying to win;
-- their own false belief blinds them.
-
-If the antagonist is supposed to be smart, do not make them leave obvious direct evidence unless there is a strong reason.
-
-Use layered evidence:
-- indirect records;
-- subordinate mistakes;
-- financial traces;
-- contradictory reports;
-- third-party verification;
-- hidden witness;
-- chain of custody.
-
-==================================================
-9. BETRAYER FUNCTION CHECK
-==================================================
-
-The betrayer must have a clear function.
-
-They can be:
-- romantic betrayer;
-- family betrayer;
-- professional betrayer;
-- institutional betrayer;
-- friend betrayer;
-- subordinate betrayer.
-
-Do not make betrayal vague.
-
-For every betrayer, define:
-- what they want;
-- what they choose;
-- why the choice feels logical to them;
-- why it is morally ugly;
-- what proof exposes them;
-- what consequence they face.
-
-Regret must be gradual.
-
-No instant regret.
-No cheap forgiveness.
-No consequence-free apology.
-
-==================================================
-10. SCENE COUNT FEASIBILITY CHECK
-==================================================
-
-Before moving from macro outline to scene cards, check whether the scene count can support the target length.
-
-For a final script of one hundred twenty thousand to one hundred thirty thousand characters, the recommended scene count is usually:
-
-thirty six to fifty scenes.
-
-Lower scene counts are allowed only if the scenes are intentionally long and structurally rich.
-
-If the plan has fewer than thirty six scenes, add a warning:
-
-SCENE COUNT WARNING:
-This may create overly long scenes and slow pacing.
-
-If needed, increase scenes by splitting:
-- investigation beats;
-- public payoff beats;
-- antagonist counterattacks;
-- regret movement;
-- proof collection;
-- hidden card reveal;
-- final collapse sequence.
-
-Do not add filler scenes.
-
-==================================================
-11. STAGE OUTPUT SELF-CHECK
-==================================================
-
-At the end of every stage, silently check:
-
-- Did I preserve locked facts?
-- Did any character role drift?
-- Did I import terms from the wrong genre?
-- Did I make the protagonist too powerful?
-- Did I make the antagonist too stupid?
-- Did I make the betrayer regret too early?
-- Is the proof visual and concrete?
-- Are payoffs believable?
-- Is the scene count realistic?
-- Are surfaces specific to this premise?
-- Did I accidentally create generic scenes?
-- Did I introduce new hidden cards without approval?
-
-If any answer is problematic, correct it before output.
-
-==================================================
-12. LINTER MUST CATCH THESE ERRORS
-==================================================
-
-Stage 05 LINTER QA must explicitly check for:
-
-- role drift;
-- domain drift;
-- strange terminology;
-- unrealistic protagonist authority;
-- unrealistic public worship;
-- weak evidence chain;
-- antagonist stupidity;
-- scene count weakness;
-- hidden card inconsistency;
-- surface repetition;
-- copied structure from previous projects.
-
-If detected, Stage 05 must provide targeted repairs.
-
-Do not ignore these problems because the text sounds dramatic.
-
-Logic is more important than style.
-Never fix style by breaking story logic.
-Never expand length by adding random events.
-Never increase drama by making characters stupid.
+Once a role, character function, hidden card, proof object, antagonist plan, or final collapse logic is approved in a previous stage, later stages MUST NOT casually change it.
+Do not change: protagonist function, antagonist function, betrayer function, true ally function, hidden advantage, victory mechanism, final collapse logic, opening fingerprint, avatar placement, or major scene surfaces.
+If a change is absolutely necessary, mark it clearly with "PROPOSED CHANGE: Reason, Risk, Requires user approval: yes". Do not silently change approved story logic.
+
+2. STYLE AFFECTS PACING, NOT LOGIC
+When using a competitor reference or style prompt, use it ONLY to adjust sentence rhythm, hook placement, and emotional intensity. It MUST NOT alter the established plot, character roles, or power sources.
 `;
 
-const preStageLogicContinuityCheck = `
+const preStageContinuityGate = `
 ==================================================
-PRE-STAGE LOGIC CONTINUITY CHECK
+PRE-STAGE CONTINUITY GATE
 ==================================================
 
-Before generating this stage, compare the current plan with the previous approved handoff.
-
+Before generating this stage, silently compare the current plan with the previous approved handoff.
 Check:
 
-1. Are all character roles unchanged?
-2. Are all hidden cards unchanged?
-3. Is the proof system still the same?
-4. Is the antagonist plan still logical?
-5. Is the betrayer still serving the same function?
-6. Is the true ally still functional, not just romantic?
-7. Has the story imported terms from another genre?
-8. Has the protagonist become unrealistically powerful?
-9. Has the final payoff become too exaggerated?
-10. Does the scene count support the target length?
+1. What was exactly locked in the previous stage?
+2. What is the approved source of the protagonist's power?
+3. What is the emotional engine that cannot be lost?
+4. What is the active function of the antagonist, betrayer, and true ally?
+5. Which hidden cards are approved (and which are unapproved inventions)?
+6. Has the story drifted into a different genre or imported foreign domain mechanics?
+7. Has the protagonist gained unearned power or the antagonist become inexplicably stupid?
+8. Does this feel like a generic copy of past stories?
 
 If there is a problem, fix it before writing the stage.
-
 Do not proceed with a logically corrupted plan.
+`;
+
+const protagonistPowerSourceLock = `
+==================================================
+PROTAGONIST POWER SOURCE LOCK
+==================================================
+
+The protagonist MUST win strictly through their APPROVED power source (e.g., money, system, magic, legal knowledge, medicine, strategy, social status, combat skill, tech, intelligence).
+- Chosen Source is Final: Do not change the approved power source without permission. If they win via competence, do not give them sudden institutional rank. If they win via wealth, do not replace it with martial arts. If they win via a system, do not substitute it with a sudden inheritance.
+- No Unauthorized Shortcuts: Do not invent secret titles, hidden central mandates, royal bloodlines, or unearned institutional badges unless it was explicitly approved in the raw idea or DNA.
+`;
+
+const emotionalEnginePreservationRule = `
+==================================================
+EMOTIONAL ENGINE PRESERVATION RULE
+==================================================
+
+The story's core emotional premise (e.g., betrayal, humiliation, accidental marriage, revenge, underdog rise, kingdom building pressure, chosen one inversion) MUST remain actively woven into every stage and part.
+- Plot mechanics (investigation, war, magic, business, court, system) are VEHICLES to explore and resolve this emotional tension, NOT replacements for it.
+- Never abandon the emotional premise in favor of a dry procedural sequence.
+`;
+
+const characterFunctionMatrix = `
+==================================================
+CHARACTER FUNCTION MATRIX
+==================================================
+
+Every major character has a locked function defined in the early stages (e.g., protagonist, antagonist, betrayer, true ally, comic relief, proof keeper, romantic contrast).
+- Do not mix too many functions into one character without reason.
+- Do not swap the betrayer's identity without a flag.
+- Do not reduce a true ally to merely a romantic prize.
+- Do not make the antagonist passive or suddenly stupid.
+- Do not allow a secondary character to randomly steal the protagonist's agency.
+`;
+
+const hiddenCardMutationControl = `
+==================================================
+HIDDEN CARD MUTATION CONTROL
+==================================================
+
+Hidden cards MUST be established in the early stages.
+You are FORBIDDEN from suddenly injecting:
+- A new secret status or title.
+- A long-lost father or royal inheritance.
+- A hidden throne, seal, or forgotten contract.
+- A brand-new magic system or omnipotent artifact.
+- A new witness or access to power.
+unless it was firmly planted in the Foundation DNA or explicitly flagged as a "Proposed Change requiring approval".
+`;
+
+const domainConsistencyRule = `
+==================================================
+DOMAIN CONSISTENCY RULE
+==================================================
+
+Each project belongs to a specific domain (e.g., cyber, medical, cultivation, billionaire, legal revenge, survival).
+- Do NOT import mechanics, terms, surfaces, proof formats, or final arenas from outside the approved domain unless the premise specifically demands it.
+- A legal drama shouldn't suddenly feature a magic system battle. A medieval kingdom story shouldn't use corporate board meetings terminology.
+Ensure all vocabulary, tools, and arenas match the exact world established.
+`;
+
+const stage03DriftDetector = `
+==================================================
+STAGE 03 DRIFT DETECTOR (SCENE CARDS)
+==================================================
+
+Before generating scene cards, confirm:
+1. Did the protagonist gain a new rank or secret status that wasn't in Stage 01/02? (If yes, REMOVE IT).
+2. Is the protagonist utilizing their approved power source to win?
+3. Is the emotional core actively driving the character motivations?
+4. Are we relying on newly invented hidden cards or status-based proof?
+Forcefully align the scenes with the Stage 01/02 DNA before outputting.
+`;
+
+const stage05LogicLinterExpansion = `
+==================================================
+STAGE 05 EXPANDED LOGIC LINTER
+==================================================
+
+You must explicitly check the FINAL SCRIPT for:
+- Role drift (did functions swap?)
+- Power source drift (did they win via an unapproved shortcut or rank instead of their actual skillset?)
+- Hidden card mutation (were unapproved trump cards played?)
+- Emotional engine loss (was the central tension/relationship/betrayal forgotten?)
+- Domain drift / Genre contamination.
+- Antagonist stupidity (losing for convenience, leaving obvious traces for no reason).
+- Payoff realism and unrealistic authority escalation.
+
+If you detect ANY of these, you MUST provide targeted repairs to fix the logical consistency of the story. Never expand length by adding random events or making characters stupid.
+`;
+
+const silentGuardrailsNotTemplateRule = `
+==================================================
+SILENT GUARDRAILS, NOT A REPEATING TEMPLATE
+==================================================
+
+These rules PROTECT the unique DNA of the current project; they do NOT force a uniform template.
+- Do not make every story a court case, an investigation, an accidental marriage, or a system story.
+- Do not force standardized "face-slap" formulas if the genre doesn't fit them.
+- Ask yourself: What is unique about THIS specific project? What must NOT be replaced? What is its unique power source and emotional engine? What would make this feel like a generic copy of previous projects?
+Enforce logic, but preserve creative uniqueness.
+`;
+
+const storyLogicCorePatch = `
+${protagonistPowerSourceLock}
+${emotionalEnginePreservationRule}
+${characterFunctionMatrix}
+${hiddenCardMutationControl}
+${domainConsistencyRule}
+${silentGuardrailsNotTemplateRule}
 `;
 
 // 0. Reference Analysis Mode extraction
@@ -2637,9 +2403,12 @@ Stage 04 must be able to write the script from these scene cards without inventi
     modelToUse = "gemini-3.5-flash";
   }
 
-  prompt += `\n\n${globalAnalysisQualityPatch}`;
+  prompt += `\n\n${globalPipelineDriftPreventionPatch}\n\n${storyLogicCorePatch}`;
   if (stageId === 2 || stageId === 3) {
-    prompt += `\n\n${preStageLogicContinuityCheck}`;
+    prompt += `\n\n${preStageContinuityGate}`;
+  }
+  if (stageId === 3) {
+    prompt += `\n\n${stage03DriftDetector}`;
   }
 
   try {
@@ -3705,7 +3474,7 @@ In ${outputLanguage || "Russian"}, begin writing ${partTitle} with the exact hea
 Write a concise but critical bulleted list (in Russian) summarizing this part. List exact hooks used, specific emotional beats consumed, metaphors applied, and precise plot points covered. This serves as your continuous memory to strictly PREVENT repeating the exact same stylistic tricks, face slaps, or reaction notes in subsequent parts.
 `;
 
-  let finalPrompt = prompt + `\n\n${globalAnalysisQualityPatch}`;
+  let finalPrompt = prompt + `\n\n${globalPipelineDriftPreventionPatch}\n\n${storyLogicCorePatch}`;
 
   try {
     const rawResponse = await generateText(finalPrompt, systemInstruction, "gemini-3.1-pro-preview", "HIGH");
@@ -5119,7 +4888,7 @@ Your job is quality control.
 You are the final gate before publication.
 `;
 
-  const finalPrompt = prompt + `\n\n${globalAnalysisQualityPatch}`;
+  const finalPrompt = prompt + `\n\n${globalPipelineDriftPreventionPatch}\n\n${storyLogicCorePatch}\n\n${stage05LogicLinterExpansion}`;
 
   try {
     const report = await generateText(finalPrompt, systemInstruction, "gemini-2.5-pro");
