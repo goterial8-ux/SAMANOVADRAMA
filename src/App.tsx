@@ -38,7 +38,9 @@ export default function App() {
         const parsed = JSON.parse(saved);
         // Ensure standard structure is verified
         if (parsed && typeof parsed === "object" && "stages" in parsed) {
-          return parsed as ProjectState;
+          // Backward compatibility check to ensure new stages are added
+          const mergedStages = { ...INITIAL_PROJECT_STATE.stages, ...parsed.stages };
+          return { ...INITIAL_PROJECT_STATE, ...parsed, stages: mergedStages } as ProjectState;
         }
       }
     } catch (e) {
@@ -464,6 +466,68 @@ export default function App() {
       });
     } catch (err: any) {
       setGenerationError(err.message || "Failed to audit script.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Stage 06: Voiceover Export Cleaner
+  const handleRunVoiceoverCleaner = async () => {
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    const linterReport = state.stages["05_linter"].output;
+    const finalScript = state.stages["04_script"].output;
+
+    if (!finalScript) {
+      setGenerationError("Final Script content is missing.");
+      setIsGenerating(false);
+      return;
+    }
+
+    if (state.stages["05_linter"].status === "not_started") {
+      setGenerationError("Please run Stage 05 Linter QA before running Voiceover Export Cleaner.");
+      setIsGenerating(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/run-voiceover-cleaner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          approvedFinalScript: finalScript,
+          approvedDomainVocabulary: "General default vocabulary",
+          forbiddenVocabulary: "Exclude any non-approved domain items.",
+          exportMode: "A. Keep part headings. Keep avatar tags."
+        }),
+      });
+
+      const raw = await res.text();
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch (e) {
+        console.error("Backend returned non-JSON:", raw);
+        throw new Error("Backend returned HTML/non-JSON. Check API route.");
+      }
+      if (data.error) throw new Error(data.error);
+
+      setState(prev => {
+        const nextStages = { ...prev.stages };
+        nextStages["06_cleaner"] = {
+          output: data.cleanedScript,
+          handoff: "Ready for voiceover recording and video production.",
+          status: "draft",
+        };
+        return {
+          ...prev,
+          stages: nextStages,
+          notes: "Voiceover cleanup completed. You can now use this text for narration."
+        };
+      });
+    } catch (err: any) {
+      setGenerationError(err.message || "Failed to clean script for voiceover.");
     } finally {
       setIsGenerating(false);
     }
@@ -3572,7 +3636,7 @@ Supports 120,000 to 130,000 characters: yes.
 
               <div className="flex items-center justify-between gap-4">
                 <div className="flex gap-2">
-                  {state.activeStageIdx !== 4 && (
+                  {state.activeStageIdx < 4 && (
                     <button
                       onClick={() => handleGenerateStage(activeStageData.feedback)}
                       disabled={isGenerating || (state.activeStageIdx === 0 && !state.rawIdea.trim())}
@@ -3584,6 +3648,28 @@ Supports 120,000 to 130,000 characters: yes.
                         <Sparkles className="w-3.5 h-3.5 text-blue-100" />
                       )}
                       {activeStageData.feedback ? `Rewrite Stage ${activeStageConfig.code}` : `Generate Stage ${activeStageConfig.code}`}
+                    </button>
+                  )}
+
+                  {state.activeStageIdx === 5 && (
+                    <button
+                      onClick={handleRunLinter}
+                      disabled={isGenerating}
+                      className="py-2 px-5 bg-fuchsia-600 hover:bg-fuchsia-500 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold text-white uppercase tracking-wider rounded flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-fuchsia-600/20 active:translate-y-[1px] focus:outline-none"
+                    >
+                      {isGenerating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5 text-fuchsia-100" />}
+                      Run Stage 05 Linter QA
+                    </button>
+                  )}
+
+                  {state.activeStageIdx === 6 && (
+                    <button
+                      onClick={handleRunVoiceoverCleaner}
+                      disabled={isGenerating}
+                      className="py-2 px-5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold text-white uppercase tracking-wider rounded flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-blue-600/20 active:translate-y-[1px] focus:outline-none"
+                    >
+                      {isGenerating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-blue-100" />}
+                      Run Stage 06 Voiceover Cleaner
                     </button>
                   )}
 
@@ -3618,7 +3704,7 @@ Supports 120,000 to 130,000 characters: yes.
                   </button>
                 )}
                 
-                {state.activeStageIdx < 5 && (
+                {state.activeStageIdx < 6 && (
                   <button
                     onClick={() => setState(prev => ({ ...prev, activeStageIdx: prev.activeStageIdx + 1 }))}
                     className="py-2 px-4 bg-white/5 hover:bg-white/10 border border-white/5 text-slate-400 hover:text-white rounded flex items-center gap-1 transition-all focus:outline-none h-full"

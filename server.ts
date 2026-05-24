@@ -251,6 +251,222 @@ These rules PROTECT the unique DNA of the current project; they do NOT force a u
 Enforce logic, but preserve creative uniqueness.
 `;
 
+const globalVoiceoverCleanlinessPatch = `
+==================================================
+GLOBAL VOICEOVER CLEANLINESS PATCH
+==================================================
+
+This rule applies to all final scripts and all export-ready text.
+
+The final script must be clean for voiceover.
+
+Do not include:
+- decorative block separators;
+- markdown headings;
+- equals-sign dividers;
+- English technical part markers;
+- stage labels;
+- scene labels;
+- internal pipeline labels;
+- planning notes;
+- analysis notes;
+- checklist items;
+- tables;
+- debug text;
+- prompt residue;
+- system residue.
+
+Forbidden examples:
+=== PART ONE ===
+=== PART TWO ===
+STAGE 04 FINAL SCRIPT
+SCENE ONE
+SCENE CARD
+OUTPUT START
+OUTPUT END
+CONTINUITY CHECK
+LINTER REPORT
+QA NOTES
+
+Allowed:
+ЧАСТЬ ПЕРВАЯ
+ЧАСТЬ ВТОРАЯ
+
+If the user requests pure narration with no part headings, remove even the part headings.
+
+The final export must contain only audience-facing narration and approved narrator/avatar lines.
+`;
+
+const domainVocabularyLock = `
+==================================================
+DOMAIN VOCABULARY LOCK
+==================================================
+
+Every project must have an approved domain vocabulary.
+
+The model must not import terms from another genre unless the premise explicitly allows it.
+
+Examples:
+If the approved domain is military fantasy / pseudo-historical military drama, avoid cyber-style terms such as:
+- digital evidence;
+- database;
+- terminal;
+- system panel;
+- cyber operation;
+- encrypted logs;
+- admin panel;
+- server;
+- algorithm;
+- data breach.
+
+Use domain-fitting alternatives:
+- archive record;
+- verified register;
+- sealed report;
+- command ledger;
+- military archive;
+- registry mark;
+- protected record room;
+- official stamp;
+- witness signature;
+- chain of custody;
+- accounting ledger;
+- inspection file.
+
+If the approved domain is cyber / game / system / sci-fi, cyber terms are allowed.
+
+Core rule:
+Vocabulary must fit the approved story world.
+Do not let replacement terms create a new genre drift.
+`;
+
+const noBlindReplacementRule = `
+==================================================
+NO BLIND REPLACEMENT RULE
+==================================================
+
+When removing forbidden vocabulary, do not use blind find-and-replace.
+
+Every replacement must be grammatically natural and context-aware.
+
+Bad:
+военная база данных столицы
+→ защищенная столичная архива
+
+Good:
+защищенный столичный архив
+or:
+столичный служебный реестр
+or:
+центральный военный архив
+
+Bad:
+командный терминал
+→ командный считыватель
+if the sentence still sounds too technological for the domain.
+
+Better:
+служебный реестровый считыватель
+or:
+архивная проверочная пластина
+or:
+офицерский проверочный прибор
+depending on the worldbuilding.
+
+After every vocabulary cleanup, silently check:
+- grammar;
+- case agreement;
+- adjective agreement;
+- natural word order;
+- domain fit;
+- voiceover clarity.
+
+Never leave mechanically replaced phrases that sound broken.
+`;
+
+const finalScriptResidueBan = `
+==================================================
+FINAL SCRIPT RESIDUE BAN
+==================================================
+
+When writing Stage 04 FINAL SCRIPT, output only the final audience-facing script.
+
+Do not include:
+- internal stage names;
+- decorative separators;
+- English part markers;
+- scene card labels;
+- analysis notes;
+- planning terms;
+- QA comments;
+- prompt instructions;
+- technical placeholders.
+
+Part headings must be in the approved language and format only.
+
+For Russian output, use:
+ЧАСТЬ ПЕРВАЯ
+ЧАСТЬ ВТОРАЯ
+ЧАСТЬ ТРЕТЬЯ
+
+Do not output:
+=== PART ONE ===
+PART ONE
+Scene One
+Stage Four
+Final Script Start
+
+The script must be immediately usable for narration.
+`;
+
+const stage05ExpandedExportLinter = `
+==================================================
+STAGE 05 EXPANDED EXPORT LINTER
+==================================================
+
+In addition to logic, structure, paragraph length, avatar count, and hidden card timing, Stage 05 must check final export cleanliness.
+
+Check for:
+
+1. Decorative markers:
+=== PART ONE ===
+--- 
+***
+### 
+markdown headers
+technical dividers
+
+2. English residue in non-English scripts:
+PART ONE
+STAGE
+SCENE
+OUTPUT
+CHECKLIST
+LINTER
+
+3. Wrong-domain vocabulary:
+cyber terms in non-cyber stories;
+legal terms in non-legal stories;
+game terms in non-game stories;
+modern tech terms in pseudo-historical settings.
+
+4. Voiceover-unfriendly text:
+tables;
+bullet lists;
+debug notes;
+prompt residue;
+metadata;
+stage labels.
+
+5. Avatar export risk:
+If [AVATAR] is present, confirm whether the export version should keep it for a separate avatar voice or replace it with a voiceover-safe marker.
+
+6. Blind replacement damage:
+Check whether vocabulary edits created broken grammar, wrong cases, unnatural phrases, or awkward word order.
+
+If any issue is found, Stage 05 must provide targeted repairs and not certify the script until export cleanliness passes.
+`;
+
 const storyLogicCorePatch = `
 ${protagonistPowerSourceLock}
 ${emotionalEnginePreservationRule}
@@ -2474,6 +2690,30 @@ USER CORRECTIONS/FEEDBACK FOR THIS PART:
 You MUST explicitly follow these instructions while writing this part.
 ` : "";
 
+  const projectVocabularyProfileText = `
+==================================================
+PROJECT VOCABULARY PROFILE
+==================================================
+
+Before Stage 04, create a short project vocabulary profile.
+
+Approved genre:
+Refer to Stage 03 Handoff.
+
+Approved setting:
+Refer to Stage 03 Handoff.
+
+Approved power source:
+Refer to Stage 03 Handoff.
+
+Approved proof style:
+Refer to Stage 03 Handoff.
+
+Replacement direction:
+Use vocabulary perfectly aligned with the established domain.
+Do NOT import terms from unrelated genres (e.g. cyber into pseudo-historical).
+`;
+
   // Avatar rules injection: Part 3, 6, and 9 will strictly trigger the exactly three avatar lines across the entire script!
   let avatarInstruction = "";
   if (avatarCommentaryEnabled && (partNumber === 3 || partNumber === 6 || partNumber === 9)) {
@@ -2668,6 +2908,8 @@ ${competitorStyleBlock}
 The goal is to create a script that feels addictive, fast, emotional, easy to narrate, and full of visible payoff.
 
 ${feedbackBlock}
+
+${projectVocabularyProfileText}
 
 ==================================================
 INPUT
@@ -3474,7 +3716,7 @@ In ${outputLanguage || "Russian"}, begin writing ${partTitle} with the exact hea
 Write a concise but critical bulleted list (in Russian) summarizing this part. List exact hooks used, specific emotional beats consumed, metaphors applied, and precise plot points covered. This serves as your continuous memory to strictly PREVENT repeating the exact same stylistic tricks, face slaps, or reaction notes in subsequent parts.
 `;
 
-  let finalPrompt = prompt + `\n\n${globalPipelineDriftPreventionPatch}\n\n${storyLogicCorePatch}`;
+  let finalPrompt = prompt + `\n\n${globalPipelineDriftPreventionPatch}\n\n${storyLogicCorePatch}\n\n${globalVoiceoverCleanlinessPatch}\n\n${domainVocabularyLock}\n\n${noBlindReplacementRule}\n\n${finalScriptResidueBan}`;
 
   try {
     const rawResponse = await generateText(finalPrompt, systemInstruction, "gemini-3.1-pro-preview", "HIGH");
@@ -4888,11 +5130,200 @@ Your job is quality control.
 You are the final gate before publication.
 `;
 
-  const finalPrompt = prompt + `\n\n${globalPipelineDriftPreventionPatch}\n\n${storyLogicCorePatch}\n\n${stage05LogicLinterExpansion}`;
+  const finalPrompt = prompt + `\n\n${globalPipelineDriftPreventionPatch}\n\n${storyLogicCorePatch}\n\n${stage05LogicLinterExpansion}\n\n${stage05ExpandedExportLinter}`;
 
   try {
     const report = await generateText(finalPrompt, systemInstruction, "gemini-2.5-pro");
     res.json({ report });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Stage 06: Voiceover Export Cleaner
+app.post("/api/run-voiceover-cleaner", async (req, res) => {
+  const { 
+    approvedFinalScript, 
+    approvedDomainVocabulary, 
+    forbiddenVocabulary, 
+    exportMode 
+  } = req.body;
+
+  if (!approvedFinalScript || approvedFinalScript.trim() === "") {
+    return res.status(400).json({ error: "Script content is empty." });
+  }
+
+  const systemInstruction = 
+    "You are 06 VOICEOVER EXPORT CLEANER.\n" +
+    "This is the final export stage after Stage 05 LINTER QA.\n" +
+    "Your task is to prepare the approved final script for voiceover.\n" +
+    "You do NOT write a new story. You do NOT change the plot. You do NOT change character arcs. You do NOT add scenes. You do NOT remove scenes. You do NOT change hidden cards. You do NOT change face-slaps. You do NOT change the ending.\n" +
+    "You only clean the final script for narration.";
+
+  const prompt = `
+==================================================
+INPUT
+==================================================
+
+Use the approved final script:
+${approvedFinalScript}
+
+Use the approved domain vocabulary:
+${approvedDomainVocabulary || "Not specified. Assume general domain."}
+
+Use forbidden vocabulary list:
+${forbiddenVocabulary || "Not specified."}
+
+Use export mode:
+${exportMode || "A. Keep part headings. Keep avatar tags."}
+
+Export mode options:
+A. Keep part headings.
+B. Remove all part headings.
+C. Keep avatar tags.
+D. Convert avatar tags into narrator-safe pauses.
+E. Remove avatar tags but keep avatar text.
+
+==================================================
+CORE TASK
+==================================================
+
+Clean the script for voiceover.
+
+Remove:
+- decorative separators;
+- markdown artifacts;
+- English technical part markers;
+- stage labels;
+- scene labels;
+- planning notes;
+- prompt residue;
+- QA notes;
+- debug text;
+- duplicate headings;
+- forbidden wrong-domain vocabulary.
+
+Preserve:
+- story;
+- order of events;
+- paragraph structure;
+- emotional rhythm;
+- dialogue;
+- proof logic;
+- avatar text if enabled;
+- approved part headings if export mode allows them.
+
+==================================================
+DECORATIVE MARKER CLEANUP
+==================================================
+
+Remove lines such as:
+
+=== PART ONE ===
+=== PART TWO ===
+---
+***
+###
+STAGE 04
+SCENE CARD
+LINTER REPORT
+OUTPUT START
+OUTPUT END
+
+Do not remove legitimate audience-facing narration.
+
+==================================================
+DOMAIN VOCABULARY CLEANUP
+==================================================
+
+Search for wrong-domain vocabulary.
+
+If the project is not cyber, game, or sci-fi, remove or rewrite terms such as:
+
+digital evidence
+database
+terminal
+system panel
+cyber operation
+encrypted logs
+server
+admin panel
+algorithm
+
+Replace with domain-fitting terms, such as:
+
+archive record
+service register
+verified registry code
+sealed report
+official ledger
+protected archive
+chain of custody
+witness signature
+inspection file
+command record
+laboratory report
+
+Do not use blind replacements.
+Rewrite the full sentence naturally.
+
+==================================================
+VOICEOVER NORMALIZATION
+==================================================
+
+Check that:
+- numbers are written as words;
+- no decorative symbols remain;
+- no markdown remains;
+- no internal labels remain;
+- paragraphs remain voiceover-friendly;
+- part headings are consistent;
+- avatar lines follow the selected export mode.
+
+If a paragraph becomes too short or too long after cleanup, repair it naturally without adding filler.
+
+==================================================
+AVATAR HANDLING
+==================================================
+
+If avatar commentary is enabled, the script should contain exactly three avatar lines before export.
+
+If export mode keeps avatar tags, format must be:
+[AVATAR] text
+
+If the TTS system will read [AVATAR] aloud incorrectly, convert tags to an agreed production marker or remove the tag while preserving the avatar text.
+
+Do not delete avatar commentary unless the user explicitly chooses no-avatar export.
+
+==================================================
+FINAL SELF-CHECK
+==================================================
+
+Before output, silently check:
+- no decorative separators remain;
+- no English technical markers remain;
+- no wrong-domain terms remain;
+- no broken grammar from replacements;
+- no numbers as digits;
+- no duplicate headings;
+- no stage labels;
+- no scene labels;
+- no QA notes;
+- no prompt residue;
+- avatar handling matches export mode;
+- final text is ready for direct narration.
+
+==================================================
+OUTPUT
+==================================================
+Output only the cleaned final script.
+Do not output a report unless the user asks for one.
+Do not explain what you changed inside the script.
+`;
+
+  try {
+    const cleanedScript = await generateText(prompt, systemInstruction, "gemini-3.1-pro-preview");
+    res.json({ cleanedScript });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

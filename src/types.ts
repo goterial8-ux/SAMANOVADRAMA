@@ -27,6 +27,7 @@ export interface ProjectState {
     '03_scenes': StageData;
     '04_script': StageData;
     '05_linter': StageData;
+    '06_cleaner': StageData;
   };
   scriptParts: ScriptPart[]; // Stage 04 breakdown (Part 1 - Part 9)
   avatarCommentaryEnabled: boolean;
@@ -48,6 +49,7 @@ export const STAGES_CONFIG = [
   { id: 3, key: '03_scenes' as const, code: '03', name: 'SCENE CARDS', description: 'Scene matrix & exit hooks' },
   { id: 4, key: '04_script' as const, code: '04', name: 'FINAL SCRIPT', description: 'Drafting 9 parts with rule locks' },
   { id: 5, key: '05_linter' as const, code: '05', name: 'LINTER QA', description: 'Technical check & surgical repair' },
+  { id: 6, key: '06_cleaner' as const, code: '06', name: 'VOICEOVER CLEANER', description: 'Final narration cleanup' },
 ];
 
 export const INITIAL_SCRIPT_PARTS: ScriptPart[] = [
@@ -73,6 +75,7 @@ export const INITIAL_PROJECT_STATE: ProjectState = {
     '03_scenes': { output: '', handoff: '', status: 'not_started' },
     '04_script': { output: '', handoff: '', status: 'not_started' },
     '05_linter': { output: '', handoff: '', status: 'not_started' },
+    '06_cleaner': { output: '', handoff: '', status: 'not_started' },
   },
   scriptParts: INITIAL_SCRIPT_PARTS,
   avatarCommentaryEnabled: true,
